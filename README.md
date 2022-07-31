@@ -8,7 +8,7 @@ To see all available parameters and their descriptions, simply call:
 python main.py --help
 ```
 
-## Train examples
+## Training
 We provide examples for training each type of model, training a final model, cross validation, and blending. For each individual model, the parameters passed in are optimal. For more details on each model, check out our [report](./report.pdf). We provide a colab notebook [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1FAtMK_piAXSFwHRoO4SF5SrdyVEdiSNU?usp=sharing) that shows these training examples and results.
 
 ### SVD
