@@ -15,7 +15,7 @@ class RBSVD_trainer:
 		self.model_name = args.get('model_name')
 		self.num_users = args.get('num_users')
 		self.num_movies = args.get('num_movies')
-		self.rank = args.get('rank')
+		self.rank = args.get('rank_rbsvd')
 		self.lambda1 = args.get('lambda1')
 		self.lambda2 = args.get('lambda2')
 		self.use_user_bias = args.get('use_user_bias')
@@ -32,7 +32,7 @@ class RBSVD_trainer:
 		lr = args.get('init_lr')
 		global_mean_ratings = np.mean(ratings_train)
 		best_rmse = np.inf
-		num_epochs = args.get('num_epochs')
+		num_epochs = args.get('num_iterations')
 		use_validation = not args.get('final_model')
 		with tqdm(total=len(users_train) * num_epochs) as pbar:
 			for epoch in range(1, num_epochs + 1):

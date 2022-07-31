@@ -24,9 +24,9 @@ class AE_trainer:
 	def train(self, users_train, movies_train, ratings_train, users_test=None, movies_test=None, ratings_test=None, **args):
 		dataloader, data_torch, mask_torch, user_id_torch = get_dataloader(users_train, movies_train, ratings_train, **args)
 		optimizer = optim.Adam(self.model.parameters(), lr=args.get('init_lr'))
-		scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=args.get('decay_rate'), last_epoch=args.get('last_epoch'))
+		scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=args.get('decay_rate'), last_epoch=args.get('last_iteration'))
 		best_rmse = np.inf
-		num_epochs = args.get('num_epochs')
+		num_epochs = args.get('num_iterations')
 		use_validation = not args.get('final_model')
 		with tqdm(total=len(dataloader) * num_epochs) as pbar:
 			for epoch in range(num_epochs):

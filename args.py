@@ -32,8 +32,8 @@ def parse_config(argv=None):
     parser.add_argument('--activation_type', default='tanh', choices=['tanh', 'sigmoid', 'leakyrelu', 'relu'], type=str, 
         help='Type of activation for neural network models')
     parser.add_argument('--batch_size', default=1024, type=int, help='Batch size for neural network models')
-    parser.add_argument('--num_epochs', default=2000, type=int, help='Number of epochs to train the model')
-    parser.add_argument('--last_epoch', default=-1, type=int, help='Last trained epoch, for resume training of a neural network model')
+    parser.add_argument('--num_iterations', default=2000, type=int, help='Number of iterations/epochs to train the model')
+    parser.add_argument('--last_iteration', default=-1, type=int, help='Last trained epoch, for resume training of a neural network model')
     parser.add_argument('--init_lr', default=0.025, type=float, help='Initial learning rate')
     parser.add_argument('--decay_rate', default=0.997, type=float, help='Decay rate for AE/VAE/RBSVD')
     parser.add_argument('--decay_every', default=5, type=int, help='Number of epochs for each step lr decay')
@@ -50,10 +50,14 @@ def parse_config(argv=None):
         'If true, pre-trained VAE model path must be specified via ckpt_path')
     parser.add_argument('--min_rating', default=1, type=int, help='Minimum possible rating, used for clipping predictions')
     parser.add_argument('--max_rating', default=5, type=int, help='Maximum possible rating, used for clipping predictions')
-    parser.add_argument('--rank', default=10, type=int, help='rank for BFM/RBSVD')
+    parser.add_argument('--rank_bfm', default=10, type=int, help='rank for BFM')
+    parser.add_argument('--rank_rbsvd', default=12, type=int, help='rank for RBSVD')
+    parser.add_argument('--rank_svd', default=9, type=int, help='rank for SVD')
+    parser.add_argument('--rank_als', default=3, type=int, help='rank for ALS')
     parser.add_argument('--bfm_regressor', default='op', choices=['blr', 'op'], type=str, help='Choice of regressor for BFM')
     parser.add_argument('--lambda1', default=0.075, type=float, help='lambda1 for RBSVD')
     parser.add_argument('--lambda2', default=0.04, type=float, help='lambda2 for RBSVD')
+    parser.add_argument('--lambda_als', default=0.2, type=float, help='lambda for ALS')
     
     args = parser.parse_args(argv)
 
