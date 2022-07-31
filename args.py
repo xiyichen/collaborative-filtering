@@ -87,10 +87,13 @@ def parse_config(argv=None):
     parser.add_argument('--dropouts_judgenet_ncf', nargs='*', default=[0.5, 0.25], 
         help='Dropout rates for layers in the judgenet in NCF')
     
-    
-    
 
     args = parser.parse_args(argv)
+
+    args.hidden_embeddingnet_ncf = [int(x) for x in args.hidden_embeddingnet_ncf]
+    args.hidden_judgenet_ncf = [int(x) for x in args.hidden_judgenet_ncf]
+    args.dropouts_embeddingnet_ncf = [float(x) for x in args.dropouts_embeddingnet_ncf]
+    args.dropouts_judgenet_ncf = [float(x) for x in args.dropouts_judgenet_ncf]
 
     if args.beta_max < 0  or args.beta_max > 1:
         parser.error('beta_max should be in [0, 1]!')

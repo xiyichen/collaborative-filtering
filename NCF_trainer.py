@@ -90,7 +90,7 @@ class NCF_trainer:
 		save_pred_type = args.get('save_pred_type')
 		if save_pred_type is not None:
 			if save_pred_type == 'full':
-				full_matrix_users, full_matrix_movies = get_all_user_movie_indices(self.num_users, self.num_movies)
+				full_matrix_users, full_matrix_movies = get_all_user_movie_indices(args.get('num_users'), args.get('num_movies'))
 				pred = self.predict(torch.tensor(np.vstack((full_matrix_users, full_matrix_movies)).T), ratings_train_mean, ratings_train_std).reshape(args.get('num_users'), args.get('num_movies'))
 				np.savetxt(os.path.join('.', self.pred_folder, self.model_name + '_pred_full.txt'), pred)
 			else:

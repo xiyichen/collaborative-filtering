@@ -68,17 +68,17 @@ def get_list(n):
         return list(n)
     raise TypeError('layers configuraiton should be a single number or a list of numbers')
 
-def get_all_user_movie_indices():
+def get_all_user_movie_indices(num_users, num_movies):
     '''
     Get all index combinations of users in [0, num_users) and movies in [0, num_movies)
     '''
     full_matrix_users = []
-    for i in range(self.num_users):
-        for j in range(self.num_movies):
+    for i in range(num_users):
+        for j in range(num_movies):
             full_matrix_users.append(i)
     full_matrix_movies = []
-    for i in range(self.num_users):
-        for j in range(self.num_movies):
+    for i in range(num_users):
+        for j in range(num_movies):
             full_matrix_movies.append(j)
     return full_matrix_users, full_matrix_movies
 
