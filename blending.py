@@ -9,14 +9,14 @@ from sklearn.ensemble import GradientBoostingRegressor
 
 def get_blender_model(**args):
     '''
-    Wrapper for blender model. One of ['lr', 'xgboost', 'gbdt'].
+    Wrapper for blender model. One of ['lr', 'xgboost', 'gb'].
     '''
     blender_model_type = args.get('blender_model_type')
     if blender_model_type == 'lr':
         return LinearRegression()
     elif blender_model_type == 'xgboost':
         return XGBRegressor()
-    elif blender_model_type == 'gbdt':
+    elif blender_model_type == 'gb':
         return GradientBoostingRegressor()
 
 def predict_blended_values(X, blending_models, **args):

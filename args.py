@@ -69,7 +69,7 @@ def parse_config(argv=None):
         help='All model types to be blended')
     parser.add_argument('--model_names_blending', nargs="*", default=['ae_cv', 'vae_cv', 'bfm_base_cv', 'bfm_base+implicit_blr_cv', 'implicit_op_cv', 'iterative_svd_cv', 'rbsvd_cv', 'ncf_cv'], 
         help='Model names for each of the model type. Length must match model_types_blending.')
-    parser.add_argument('--blender_model_type', default='gbdt', choices=['lr', 'xgboost', 'gbdt'], type=str, 
+    parser.add_argument('--blender_model_type', default='gb', choices=['lr', 'xgboost', 'gb'], type=str, 
         help='Choice of model for blending')
     parser.add_argument('--final_pred_names', nargs="*", default=['ae_final', 'vae_final', 'bfm_base_final', 'bfm_base+implicit_blr_final', 'bfm_base+implicit_op_final', 'iterative_svd_final', 'rbsvd_final', 'ncf_final'],
         help='Names of predictions for all final models')
