@@ -16,6 +16,8 @@ class ALS_trainer:
 		self.rank_als = args.get('rank_als')
 		self.num_iterations = args.get('num_iterations')
 		self.lambda_als = args.get('lambda_als')
+		self.min_rating = args.get('min_rating')
+		self.max_rating = args.get('max_rating')
 
 	def ALS(self, A, mask_A, k=3, n_itr=20, lambda_=0.1):
 		print("Initializing ALS")
@@ -85,5 +87,5 @@ class ALS_trainer:
 
 
 	def predict(self, col_mean, col_std):
-		return de_norm(self.U.dot(self.V), col_mean, col_std)
+		return de_norm(self.U.dot(self.V), col_mean, col_std).clip(self.min_rating, self.max_rating)
 		

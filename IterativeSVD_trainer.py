@@ -13,6 +13,8 @@ class IterativeSVD_trainer:
 		self.model_name = args.get('model_name')
 		self.num_iterations = args.get('num_iterations')
 		self.shrinkage = args.get('shrinkage')
+		self.min_rating = args.get('min_rating')
+		self.max_rating = args.get('max_rating')
 
 	def IterSVD(self, A, mask_A, shrinkage=38, n_itr=15):
 		X = A.copy()
@@ -27,7 +29,7 @@ class IterativeSVD_trainer:
 			X[mask_A] = A[mask_A]
 			print("%sth iteration is complete." % i)
 
-		Arc = X.clip(min=1, max=5)
+		Arc = X.clip(self.min_rating, self.max_rating)
 		return Arc
 
 	def train(self, users_train, movies_train, ratings_train, users_test=None, movies_test=None, ratings_test=None, **args):

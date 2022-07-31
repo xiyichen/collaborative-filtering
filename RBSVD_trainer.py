@@ -20,6 +20,8 @@ class RBSVD_trainer:
 		self.lambda2 = args.get('lambda2')
 		self.use_user_bias = args.get('use_user_bias')
 		self.use_movie_bias = args.get('use_movie_bias')
+		self.num_users = args.get('num_users')
+		self.num_movies = args.get('num_movies')
 
 	def train(self, users_train, movies_train, ratings_train, users_test=None, movies_test=None, ratings_test=None, **args):
 		# Initialize components.
@@ -120,7 +122,7 @@ class RBSVD_trainer:
 			if self.use_movie_bias:
 				pred += self.biasV[movie]
 			preds.append(pred)
-		preds = np.array(preds)
+		preds = np.array(preds).clip(self.min_rating, self.max_rating)
 
 		if save_pred_type == 'full':
 			preds = preds.reshape((self.num_users, self.num_movies))

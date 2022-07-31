@@ -58,6 +58,8 @@ def parse_config(argv=None):
     parser.add_argument('--lambda1', default=0.075, type=float, help='lambda1 for RBSVD')
     parser.add_argument('--lambda2', default=0.04, type=float, help='lambda2 for RBSVD')
     parser.add_argument('--lambda_als', default=0.2, type=float, help='lambda for ALS')
+    parser.add_argument('--shrinkage', default=38, type=int, help='Shrinkage for Iterative SVD')
+    parser.add_argument('--k_fold', default=10, type=int, help='The number of folds for cross validation.')
     
     args = parser.parse_args(argv)
 

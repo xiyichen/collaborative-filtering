@@ -13,6 +13,8 @@ class SVD_trainer:
 		self.model_name = args.get('model_name')
 		self.num_movies = args.get('num_movies')
 		self.rank = args.get('rank_svd')
+		self.min_rating = args.get('min_rating')
+		self.max_rating = args.get('max_rating')
 
 	def SVD(self, A, num_movies, k=9):
 		U, s, Vt = np.linalg.svd(A, full_matrices=False)
@@ -59,5 +61,5 @@ class SVD_trainer:
 
 
 	def predict(self, col_mean, col_std):
-		return de_norm(self.U.dot(self.S).dot(self.Vt), col_mean, col_std)
+		return de_norm(self.U.dot(self.S).dot(self.Vt), col_mean, col_std).clip(self.min_rating, self.max_rating)
 		
