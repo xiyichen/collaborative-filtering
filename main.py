@@ -1,0 +1,50 @@
+from args import parse_config
+from utils import extract_user_movie_rating_arrays
+from sklearn.model_selection import train_test_split
+import pandas as pd
+import numpy as np
+import torch
+from VAE_trainer import VAE_trainer
+from AE_trainer import AE_trainer
+from BFM_trainer import BFM_trainer
+from RBSVD_trainer import RBSVD_trainer
+from IterativeSVD_trainer import IterativeSVD_trainer
+from SVD_trainer import SVD_trainer
+
+def get_trainer(**args):
+    model_type = args.get('model_type')
+    if model_type == 'ae':
+        return AE_trainer(**args)
+    elif model_type == 'vae':
+        return VAE_trainer(**args)
+    elif model_type == 'bfm':
+        return BFM_trainer(**args)
+    elif model_type == 'rbsvd':
+        return RBSVD_trainer(**args)
+    elif model_type == 'iterative_svd':
+        return IterativeSVD_trainer(**args)
+    elif model_type == 'svd':
+        return SVD_trainer(**args)
+
+def train(**args):
+    df_all = pd.read_csv(args.get('train_csv_path'))
+    final_model = args.get('final_model')
+    num_users = args.get('num_users')
+    num_movies = args.get('num_movies')
+    device = args.get('device')
+    if final_model:
+        df_train = df_all
+        df_test = pd.read_csv(args.get('test_csv_path'))
+    else:
+        df_train, df_test = train_test_split(df_all, test_size=args.get('test_size'), random_state=args.get('random_seed'))
+    users_train, movies_train, ratings_train = extract_user_movie_rating_arrays(df_train)
+    users_test, movies_test, ratings_test = extract_user_movie_rating_arrays(df_test)
+
+    print('Number of training sumples: {}, number of test samples: {}.'.format(len(users_train), len(users_test)))
+
+    trainer = get_trainer(**args)
+    trainer.train(users_train, movies_train, ratings_train, users_test, movies_test, ratings_test, **args)
+
+if __name__ == '__main__':
+    args = parse_config()
+    train(**args)
