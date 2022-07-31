@@ -16,7 +16,8 @@ class AE_trainer:
 		self.max_rating = args.get('max_rating')
 		device = args.get('device')
 		self.model = AE(**args).to(device)
-		print(self.model)
+		if not '_fold_' in self.model_name:
+			print(self.model)
 		ckpt_path = args.get('ckpt_path')
 		if ckpt_path is not None:
 			self.model.load_state_dict(torch.load(ckpt_path))

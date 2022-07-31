@@ -1,5 +1,5 @@
 from args import parse_config
-from utils import extract_user_movie_rating_arrays
+from utils import *
 from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np

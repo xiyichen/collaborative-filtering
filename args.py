@@ -60,6 +60,7 @@ def parse_config(argv=None):
     parser.add_argument('--lambda_als', default=0.2, type=float, help='lambda for ALS')
     parser.add_argument('--shrinkage', default=38, type=int, help='Shrinkage for Iterative SVD')
     parser.add_argument('--k_fold', default=10, type=int, help='The number of folds for cross validation.')
+    parser.add_argument('--cv_folder', default='cv_results', type=str, help='Folder to store cross validation models and predictions')
     
     args = parser.parse_args(argv)
 
