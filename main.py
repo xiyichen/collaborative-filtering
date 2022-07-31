@@ -11,6 +11,7 @@ from RBSVD_trainer import RBSVD_trainer
 from IterativeSVD_trainer import IterativeSVD_trainer
 from SVD_trainer import SVD_trainer
 from ALS_trainer import ALS_trainer
+import os
 
 def get_trainer(**args):
     '''
@@ -38,6 +39,11 @@ def train(**args):
     num_users = args.get('num_users')
     num_movies = args.get('num_movies')
     device = args.get('device')
+    if not os.path.exists(args.get('ckpt_folder')):
+        os.makedirs(args.get('ckpt_folder'))
+    if not os.path.exists(args.get('pred_folder')):
+        os.makedirs(args.get('pred_folder'))
+
     if final_model:
         # Training final model using all available data, loading the public test set as df_test (without ground truth).
         df_train = df_all

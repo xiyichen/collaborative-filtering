@@ -6,7 +6,7 @@ import os
 class ALS_trainer:
 	def __init__(self, **args):
 		'''
-		Trainer for Alternating Least Squares  (ALS)
+		Trainer for Alternating Least Squares (ALS)
 		'''
 		self.ckpt_folder = args.get('ckpt_folder')
 		self.pred_folder = args.get('pred_folder')
@@ -37,7 +37,7 @@ class ALS_trainer:
 				V[:,j] = np.linalg.solve(np.dot(U.T, np.dot(np.diag(Rj), U)) + lambda_ * np.eye(k),
 					np.dot(U.T, np.dot(np.diag(Rj), A[:, j])))
 			print("Error after solving for V matrix:", np.sum((mask_A * (A - np.dot(U, V))) ** 2) / np.sum(mask_A))
-			print("%sth iteration is complete.." % iter)
+			print("%sth iteration is complete." % iter)
 
 		return U, V
 
