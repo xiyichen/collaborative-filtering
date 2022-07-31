@@ -130,9 +130,9 @@ To generate prediction files for blending multiple models, add flag `--blend_for
 To generate a csv file for submission, specify `save_pred_type` and `model_name`
 For example:
 ```
-python submission.py --save_pred_type 'full' --model_name 'VAE_full'
+python submission.py --save_pred_type 'test_indices' --model_name 'blended_final'
 ```
-reads `VAE_full.txt` from `pred_folder` and extract user and movie indices of the test set, and generate a csv file for submission.
+reads `blended_final.txt` from `pred_folder` and extract user and movie indices of the test set, and generate a csv file for submission.
 
 ## Experiment results
 Below are our experiment results. You can reproduce them by using random seed 42 for cross validation.
