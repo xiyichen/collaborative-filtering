@@ -99,6 +99,9 @@ python blending.py --k_fold 10 --random_seed 42 --blender_model_type 'gb' \
     --final_pred_names 'BFM_OrderedProbit_full' 'VAE_full' --blend_for_submission
 ```
 
+## Generating predictions
+To generate prediction files, add flag `--save_pred_type` which is either 'full' (for full reconstructed 10000x1000 matrix) or 'test_indices' (only saving predictions for the test user and movies). To train a final model with all available training data and generate predictions for the test set, you can use `--final_model --save_pred_type 'test_indices'`.
+
 ## Experiment Results
 Below are our experiment results. You can reproduce them by using random seed 42 for cross validation.
 | Method                                       | Local CV Score | Public Test Score |
