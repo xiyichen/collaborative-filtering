@@ -11,6 +11,7 @@ from RBSVD_trainer import RBSVD_trainer
 from IterativeSVD_trainer import IterativeSVD_trainer
 from SVD_trainer import SVD_trainer
 from ALS_trainer import ALS_trainer
+from NCF_trainer import NCF_trainer
 import os
 
 def get_trainer(**args):
@@ -32,6 +33,8 @@ def get_trainer(**args):
         return SVD_trainer(**args)
     elif model_type == 'als':
         return ALS_trainer(**args)
+    elif model_type == 'ncf':
+        return NCF_trainer(**args)
 
 def train(**args):
     df_all = pd.read_csv(args.get('train_csv_path'))

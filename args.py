@@ -38,7 +38,8 @@ def parse_config(argv=None):
     parser.add_argument('--num_iterations', default=2000, type=int, help='Number of iterations/epochs to train the model')
     parser.add_argument('--last_iteration', default=-1, type=int, help='Last trained epoch, for resume training of a neural network model')
     parser.add_argument('--init_lr', default=0.025, type=float, help='Initial learning rate')
-    parser.add_argument('--decay_rate', default=0.997, type=float, help='Decay rate for AE/VAE/RBSVD')
+    parser.add_argument('--lr_decay_rate', default=0.997, type=float, help='Learning rate decay rate')
+    parser.add_argument('--weight_decay_rate', default=0, type=float, help='Weight decay rate')
     parser.add_argument('--decay_every', default=5, type=int, help='Number of epochs for each step lr decay')
     parser.add_argument('--beta_max', default=0.2, type=float, help='Maximum possible value for beta in VAE')
     parser.add_argument('--M', default=100, type=int, help='The number of epochs for an annealing cycle in VAE')
@@ -73,6 +74,21 @@ def parse_config(argv=None):
     parser.add_argument('--final_pred_names', nargs="*", default=['ae_final', 'vae_final', 'bfm_base_final', 'bfm_base+implicit_blr_final', 'bfm_base+implicit_op_final', 'iterative_svd_final', 'rbsvd_final', 'ncf_final'],
         help='Names of predictions for all final models')
     parser.add_argument('--blend_for_submission', action='store_true', help='Whether to blend all final predictions for submission. If true, final_pred_names must be specified')
+    parser.add_argument('--user_code_length_ncf', default=128, type=int, help='users latent vector dimension for NCF')
+    parser.add_argument('--movie_code_length_ncf', default=128, type=int, help='Movie latent vector dimension for NCF')
+    parser.add_argument('--multiplication_code_length_ncf', default=128, type=int, help='Dimension of multiplcation feature for NCF')
+    parser.add_argument('--feature_dropout_ncf', default=0.0, type=float, help='Feature dropout rate for NCF')
+    parser.add_argument('--hidden_embeddingnet_ncf', nargs='*', default=[256, 128], 
+        help='Hidden layers for the embeddingnet in NCF')
+    parser.add_argument('--hidden_judgenet_ncf', nargs='*', default=[256, 128], 
+        help='Hidden layers for the judgenet in NCF')
+    parser.add_argument('--dropouts_embeddingnet_ncf', nargs='*', default=[0.05, 0.1, 0.1], 
+        help='Dropout rates for layers in the embeddingnet in NCF')
+    parser.add_argument('--dropouts_judgenet_ncf', nargs='*', default=[0.5, 0.25], 
+        help='Dropout rates for layers in the judgenet in NCF')
+    
+    
+    
 
     args = parser.parse_args(argv)
 

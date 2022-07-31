@@ -20,12 +20,12 @@ class VAE_trainer:
 			print(self.model)
 		ckpt_path = args.get('ckpt_path')
 		if ckpt_path is not None:
-			self.model.load_state_dict(torch.load(ckpt_path))
+			self.model.load_state_dict(torch.load(ckpt_path, map_location=args.get('device')))
 
 	def train(self, users_train, movies_train, ratings_train, users_test=None, movies_test=None, ratings_test=None, **args):
 		dataloader, data_torch, mask_torch, user_id_torch = get_dataloader(users_train, movies_train, ratings_train, **args)
-		optimizer = optim.Adam(self.model.parameters(), lr=args.get('init_lr'))
-		scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=args.get('decay_rate'), last_epoch=args.get('last_iteration'))
+		optimizer = optim.Adam(self.model.parameters(), lr=args.get('init_lr'), weight_decay=args.get('weight_decay_rate'))
+		scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=args.get('lr_decay_rate'), last_epoch=args.get('last_iteration'))
 		best_rmse = np.inf
 		num_epochs = args.get('num_iterations')
 		use_validation = not args.get('final_model')
@@ -54,6 +54,7 @@ class VAE_trainer:
 					self.model.train()
 				scheduler.step()
 		
+		self.model.eval()
 		# Save the model.
 		if args.get('save_model'):
 			torch.save(self.model.state_dict(), os.path.join('.', self.ckpt_folder, self.model_name + '.pt'))

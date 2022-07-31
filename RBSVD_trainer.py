@@ -93,7 +93,7 @@ class RBSVD_trainer:
 					pbar.set_description('At epoch {:3d}: best loss {:.4f}, current loss {:.4f}'.format(epoch, best_rmse, reconstruction_rmse))
 
 				if epoch % args.get('decay_every') == 0:
-					lr /= args.get('decay_rate')
+					lr /= args.get('lr_decay_rate')
 
 		# Save the model as components.
 		if args.get('save_model'):

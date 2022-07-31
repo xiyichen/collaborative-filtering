@@ -9,7 +9,7 @@ import os
 
 def load_prediction(folder, model_name):
     '''
-    Load one prediction.
+    Load one prediction
     '''
     return np.loadtxt(os.path.join(folder, model_name + '.txt'))
 
@@ -57,6 +57,16 @@ def get_activation(activation_type):
         return nn.Sigmoid()
     elif activation_type == 'tanh':
         return nn.Tanh()
+
+def get_list(n):
+    '''
+    Convert an object to list, used for NCF layers
+    '''
+    if isinstance(n, (int, float)):
+        return [n]
+    elif hasattr(n, '__iter__'):
+        return list(n)
+    raise TypeError('layers configuraiton should be a single number or a list of numbers')
 
 def get_all_user_movie_indices():
     '''
