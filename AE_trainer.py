@@ -51,9 +51,12 @@ class AE_trainer:
 						.format(epoch, best_rmse, reconstruction_rmse, optimizer.param_groups[0]["lr"]))
 					self.model.train()
 				scheduler.step()
-			if args.get('save_model'):
-				torch.save(self.model.state_dict(), os.path.join('.', self.ckpt_folder, self.model_name + '.pt'))
 
+		# Save the model.
+		if args.get('save_model'):
+			torch.save(self.model.state_dict(), os.path.join('.', self.ckpt_folder, self.model_name + '.pt'))
+
+		# Save prediction for either the full num_users*num_movies reconstruction matrix or only the user-movie indices in the test set.
 		save_pred_type = args.get('save_pred_type')
 		if save_pred_type is not None:
 			reconstructed_matrix = self.predict(data_torch, user_id_torch)

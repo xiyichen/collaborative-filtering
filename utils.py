@@ -10,7 +10,7 @@ def init_weights(layers, init_type):
     '''
     Initialize weights for a NN layer. if init_type is not None, it should be either 
     "xavier" (https://proceedings.mlr.press/v9/glorot10a/glorot10a.pdf) or
-    "Kaiming" (https://pytorch.org/docs/stable/_modules/torch/nn/init.html#kaiming_uniform_)
+    "kaiming" (https://pytorch.org/docs/stable/_modules/torch/nn/init.html#kaiming_uniform_)
     '''
     for layer in layers:
         if init_type == 'xavier':

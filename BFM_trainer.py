@@ -1,7 +1,7 @@
 from tqdm import tqdm
 import torch
 import numpy as np
-from utils import extract_prediction_from_full_matrix, get_dataloader, get_all_user_movie_indices
+from utils import *
 from torch.utils.data import DataLoader, TensorDataset
 import os
 from typing import Dict, List, Union
@@ -31,6 +31,10 @@ class BFM_trainer:
 		self.num_movies = args.get('num_movies')
 
 	def augment_user_id(self, user_ids: List[int], user_vs_watched, user_to_internal, movie_to_internal) -> sps.csr_matrix:
+		'''
+		Generate one-hot encoding for the user index and implicit user features as a normalized vector recording if 
+		each of the movies has been watched this user. Store data as a compressed sparse row matrix to allow building relation blocks.
+		'''
 		X = user_to_internal.to_sparse(user_ids)
 		if not self.use_iu:
 			return X
@@ -56,6 +60,10 @@ class BFM_trainer:
 		)
 
 	def augment_movie_id(self, movie_ids: List[int], movie_vs_watched, user_to_internal, movie_to_internal) -> sps.csr_matrix:
+		'''
+		Generate one-hot encoding for the movie index and implicit movie features as a normalized vector recording if 
+		each of the users has watched this movie. Store data as a compressed sparse row matrix to allow building relation blocks.
+		'''
 		X = movie_to_internal.to_sparse(movie_ids)
 		if not self.use_ii:
 			return X
@@ -82,6 +90,10 @@ class BFM_trainer:
 		)
 
 	def get_auxiliary_features(self, X_train, X_test, users_train, movies_train, ratings_train, users_test, movies_test, **args):
+		'''
+		Generate auxiliary features. If bfm_auxiliary_latent_code is True, add the 32-dimensional encoded latent vector from a pre-trained VAE.
+		If bfm_auxiliary_statistical_feature is True, add statistical features including mean and std for recorded ratings of each user and movie.
+		'''
 		_, data_torch, mask_torch, user_id_torch = get_dataloader(users_train, movies_train, ratings_train, **args)
 
 		if args.get('bfm_auxiliary_latent_code'):
@@ -128,21 +140,28 @@ class BFM_trainer:
 
 	def train(self, users_train, movies_train, ratings_train, users_test=None, movies_test=None, ratings_test=None, **args):
 		X_train, X_test = None, None
+		# Get optional auxiliary features.
 		X_train, X_test = self.get_auxiliary_features(X_train, X_test, users_train, movies_train, ratings_train, users_test, movies_test, **args)
 
 		use_validation = not args.get('final_model')
+
+		# One-hot encoder for user and movie matrices.
 		user_to_internal = CategoryValueToSparseEncoder[int](
 			users_train
 		)
 		movie_to_internal = CategoryValueToSparseEncoder[int](
 			movies_train
 		)
+
+		# Dict of indices to record movies watched by each user / All users that have watched each movie.
 		movie_vs_watched: Dict[int, List[int]] = dict()
 		user_vs_watched: Dict[int, List[int]] = dict()
 
 		for (user_id, movie_id) in zip(users_train, movies_train):
 			movie_vs_watched.setdefault(movie_id, list()).append(user_id)
 			user_vs_watched.setdefault(user_id, list()).append(movie_id)
+
+		# Allow separate variance for different set of features via grouping. Check out myFM documentation for more details.
 		feature_group_sizes = []
 
 		feature_group_sizes.append(len(user_to_internal))  # user ids
@@ -158,6 +177,8 @@ class BFM_trainer:
 			feature_group_sizes.append(len(user_to_internal))
 
 		grouping = [i for i, size in enumerate(feature_group_sizes) for _ in range(size)]
+
+		# Build relational blocks for all base + implicit features.
 		train_blocks: List[RelationBlock] = []
 		test_blocks: List[RelationBlock] = []
 		for user_ids, movie_ids, blocks in [(users_train, movies_train, train_blocks), (users_test, movies_test, test_blocks)]:
@@ -168,6 +189,7 @@ class BFM_trainer:
 		callback = None
 		regressor_type = args.get('bfm_regressor')
 		if regressor_type == 'op':
+			# Train an ordinal probit regressor.
 			self.model = MyFMOrderedProbit(rank=self.rank)
 			if use_validation:
 				callback = OrderedProbitCallback(
@@ -178,6 +200,7 @@ class BFM_trainer:
 					n_class=self.max_rating - self.min_rating + 1
 				)
 		else:
+			# Train a Bayesian Linear Regressor with Gibbs sampler.
 			self.model = MyFMGibbsRegressor(rank=self.rank)
 			if use_validation:
 				callback = RegressionCallback(
@@ -199,10 +222,13 @@ class BFM_trainer:
 			callback=callback
 		)
 
+		# Save the model.
 		if args.get('save_model'):
 			with open(os.path.join('.', self.ckpt_folder, self.model_name + '.pkl'), 'wb') as f:
 				pickle.dump(self.model, f)
 
+		# Save prediction for either the full num_users*num_movies reconstruction matrix or only the user-movie indices in the test set.
+		# Note that it could take about 20 minutes to reconstruct the entire matrix.
 		save_pred_type = args.get('save_pred_type')
 		if save_pred_type is not None:
 			if save_pred_type == 'full':

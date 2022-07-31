@@ -37,14 +37,20 @@ class VAE(nn.Module):
             nn.Linear(in_features=hidden_dimension, out_features=self.num_movies)
         )
 
+        # Optionally learn user/movie bias vectors.
         if self.use_user_bias:
             self.user_bias = torch.nn.Parameter(torch.ones((self.num_users, 1)))
         if self.use_movie_bias:
             self.movie_bias = torch.nn.Parameter(torch.ones((1, self.num_movies)))
         
+        # Initialize weights for linear layers.
         init_weights([self.encoder[1], self.mu, self.logvar, self.decoder[0], self.decoder[-1]], weight_init_type)
 
     def reparameterize(self, mu, logvar):
+        '''
+        Reparameterize z_u = mu_phi + epsilon * sigma_phi so that the gradient with respect to phi
+        can be back-propagated through sampling z_u.
+        '''
         if self.training:
             std = torch.exp(0.5 * logvar)
             eps = torch.randn_like(std)
@@ -65,6 +71,9 @@ class VAE(nn.Module):
         return recon, z, mu, logvar
 
     def get_beta(self, epoch, num_epochs=2000):
+        '''
+        Get the index beta for the KL loss term. One of constant value, linear annealing, and cyclic annealing.
+        '''
         if self.beta_annealing_schedule is None:
             beta = beta_max
         elif self.beta_annealing_schedule == 'linear':

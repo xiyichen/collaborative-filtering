@@ -6,6 +6,10 @@ from sklearn.utils import shuffle
 
 class RBSVD_trainer:
 	def __init__(self, **args):
+		'''
+		Trainer for Regularized+Biased SVD, minimizing the objective using Stochastic Graident Descent (SGD).
+		Refenrence: https://www.cs.uic.edu/~liub/KDD-cup-2007/proceedings/Regular-Paterek.pdf
+		'''
 		self.ckpt_folder = args.get('ckpt_folder')
 		self.pred_folder = args.get('pred_folder')
 		self.model_name = args.get('model_name')
@@ -18,6 +22,7 @@ class RBSVD_trainer:
 		self.use_movie_bias = args.get('use_movie_bias')
 
 	def train(self, users_train, movies_train, ratings_train, users_test=None, movies_test=None, ratings_test=None, **args):
+		# Initialize components.
 		self.U = np.random.uniform(0, 0.01, (self.num_users, self.rank))
 		self.V = np.random.uniform(0, 0.01, (self.num_movies, self.rank))
 		if self.use_user_bias:
@@ -33,7 +38,9 @@ class RBSVD_trainer:
 			for epoch in range(1, num_epochs + 1):
 				users_train_sh, movies_train_sh, ratings_train_sh = shuffle(users_train, movies_train, ratings_train)
 
+				# Shuffle the dataset to perform SGD for the current epoch.
 				for user, movie, rating in zip(users_train_sh, movies_train_sh, ratings_train_sh):
+					# Get components for the current user and movie
 					U_d = self.U[user, :]
 					V_n = self.V[movie, :]
 					if self.use_user_bias:
@@ -49,6 +56,9 @@ class RBSVD_trainer:
 					pbar.update(1)
 
 					try:
+						'''
+						Gradient descent to update U, V and if using bias, biasU and biasV.
+						'''
 						new_U_d = U_d + lr * (delta * V_n - self.lambda1 * U_d)
 						new_V_n = V_n + lr * (delta * U_d - self.lambda1 * V_n)
 						if self.use_user_bias:
@@ -81,6 +91,7 @@ class RBSVD_trainer:
 				if epoch % args.get('decay_every') == 0:
 					lr /= args.get('decay_rate')
 
+		# Save the model as components.
 		if args.get('save_model'):
 			np.savetxt(os.path.join('.', self.ckpt_folder, self.model_name + '_U.txt'), self.U)
 			np.savetxt(os.path.join('.', self.ckpt_folder, self.model_name + '_V.txt'), self.V)
@@ -89,6 +100,7 @@ class RBSVD_trainer:
 			if self.use_movie_bias:
 				np.savetxt(os.path.join('.', self.ckpt_folder, self.model_name + '_biasV.txt'), self.biasV)
 
+		# Save prediction for either the full num_users*num_movies reconstruction matrix or only the user-movie indices in the test set.
 		save_pred_type = args.get('save_pred_type')
 		if save_pred_type is not None:
 			if save_pred_type == 'full':

@@ -32,11 +32,13 @@ class AE(nn.Module):
             nn.Linear(in_features=hidden_dimension, out_features=self.num_movies)
         )
 
+        # Optionally learn user/movie bias vectors.
         if self.use_user_bias:
             self.user_bias = torch.nn.Parameter(torch.ones((self.num_users, 1)))
         if self.use_movie_bias:
             self.movie_bias = torch.nn.Parameter(torch.ones((1, self.num_movies)))
         
+        # Initialize weights for linear layers.
         init_weights([self.encoder[1], self.encoder[-1], self.decoder[0], self.decoder[-1]], weight_init_type)
 
     def forward(self, data, users):
@@ -47,9 +49,6 @@ class AE(nn.Module):
         if self.use_movie_bias:
             recon += self.movie_bias.repeat(z.shape[0], 1)
         return recon, z
-
-    def reconstruct_whole_matrix(data, users):
-        return self.forward(data, users).detach().cpu().numpy().clip(1, 5)
 
     def loss_function(self, original, reconstructed, mask):
         return torch.mean(mask * (original - reconstructed) ** 2)

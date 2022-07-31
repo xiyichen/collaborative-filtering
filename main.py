@@ -12,6 +12,9 @@ from IterativeSVD_trainer import IterativeSVD_trainer
 from SVD_trainer import SVD_trainer
 
 def get_trainer(**args):
+    '''
+    Trainer function wrapper. One of ['ae', 'vae', 'bfm', 'iterative_svd', 'rbsvd', 'svd', 'als', 'ncf']
+    '''
     model_type = args.get('model_type')
     if model_type == 'ae':
         return AE_trainer(**args)
@@ -33,10 +36,13 @@ def train(**args):
     num_movies = args.get('num_movies')
     device = args.get('device')
     if final_model:
+        # Training final model using all available data, loading the public test set as df_test (without ground truth).
         df_train = df_all
         df_test = pd.read_csv(args.get('test_csv_path'))
     else:
+        # Split the data into train and test set
         df_train, df_test = train_test_split(df_all, test_size=args.get('test_size'), random_state=args.get('random_seed'))
+    # Extract user, movie, rating vectors from the dataframe.
     users_train, movies_train, ratings_train = extract_user_movie_rating_arrays(df_train)
     users_test, movies_test, ratings_test = extract_user_movie_rating_arrays(df_test)
 
