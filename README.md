@@ -31,7 +31,7 @@ python main.py --model_type 'iterative_svd' --model_name 'IterSVD_test' --shrink
 ### Regularized + Biased SVD
 ```
 python main.py --model_type 'rbsvd' --model_name 'RBSVD_test' --num_iterations 50 --lambda1 0.075 --lambda2 0.04 \
-    --init_lr 0.05 --lr_decay_rate 1.5 --decay_every 5 --rank_rbsvd 12 --use_user_bias --use_movie_bias --random_seed 42
+    --init_lr 0.05 --lr_decay_rate 0.7 --decay_every 5 --rank_rbsvd 12 --use_user_bias --use_movie_bias --random_seed 42
 ```
 
 ### Bayesian FM Base (Gibbs)
