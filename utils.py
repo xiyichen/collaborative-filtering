@@ -5,6 +5,26 @@ import pandas as pd
 import numpy as np
 import torch
 from torch.utils.data import DataLoader, TensorDataset
+import os
+
+def load_prediction(folder, model_name):
+    '''
+    Load one prediction.
+    '''
+    return np.loadtxt(os.path.join(folder, model_name + '.txt'))
+
+def load_all_predictions(**args):
+    '''
+    Load prediction for all of the folds of all models to be blended
+    '''
+    cv_folder = args.get('cv_folder')
+    all_predictions = {}
+    for model_type, model_name in zip(args.get('model_types_blending'), args.get('model_names_blending')):
+        print('Loading predictions for model: {}'.format(model_type))
+        all_predictions[model_type] = []
+        for i in range(args.get('k_fold')):
+            all_predictions[model_type].append(load_prediction(cv_folder, model_name + '_fold_' + str(i+1)))
+    return all_predictions
 
 def init_weights(layers, init_type):
     '''

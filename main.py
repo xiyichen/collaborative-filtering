@@ -15,7 +15,7 @@ import os
 
 def get_trainer(**args):
     '''
-    Trainer function wrapper. One of ['ae', 'vae', 'bfm', 'iterative_svd', 'rbsvd', 'svd', 'als', 'ncf']
+    Trainer function wrapper. One of ['ae', 'vae', 'bfm', 'iterative_svd', 'rbsvd', 'svd', 'als', 'ncf'].
     '''
     model_type = args.get('model_type')
     if model_type == 'ae':
@@ -36,9 +36,6 @@ def get_trainer(**args):
 def train(**args):
     df_all = pd.read_csv(args.get('train_csv_path'))
     final_model = args.get('final_model')
-    num_users = args.get('num_users')
-    num_movies = args.get('num_movies')
-    device = args.get('device')
     if not os.path.exists(args.get('ckpt_folder')):
         os.makedirs(args.get('ckpt_folder'))
     if not os.path.exists(args.get('pred_folder')):

@@ -8,9 +8,6 @@ def cross_validation(**args):
     df_all = pd.read_csv(args.get('train_csv_path'))
     # Extract user, movie, rating vectors from the dataframe.
     users, movies, ratings = extract_user_movie_rating_arrays(df_all)
-    num_users = args.get('num_users')
-    num_movies = args.get('num_movies')
-    device = args.get('device')
     cv_folder = args.get('cv_folder')
     base_model_name = args.get('model_name')
     if not os.path.exists(cv_folder):

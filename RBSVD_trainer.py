@@ -22,6 +22,8 @@ class RBSVD_trainer:
 		self.use_movie_bias = args.get('use_movie_bias')
 		self.num_users = args.get('num_users')
 		self.num_movies = args.get('num_movies')
+		self.min_rating = args.get('min_rating')
+		self.max_rating = args.get('max_rating')
 
 	def train(self, users_train, movies_train, ratings_train, users_test=None, movies_test=None, ratings_test=None, **args):
 		# Initialize components.

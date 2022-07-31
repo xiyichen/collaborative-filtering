@@ -9,6 +9,7 @@ import torch.optim as optim
 class VAE_trainer:
 	def __init__(self, **args):
 		self.ckpt_folder = args.get('ckpt_folder')
+		self.pred_folder = args.get('pred_folder')
 		self.model_name = args.get('model_name')
 		self.ckpt_path = args.get('ckpt_path')
 		self.min_rating = args.get('min_rating')

@@ -2,13 +2,16 @@ import argparse
 import torch
 
 def parse_config(argv=None):
+    '''
+    Arguments list for training, cross validation, and blending for all of our models.
+    '''
     parser = argparse.ArgumentParser(description='Parameters for collaborative filtering.')
     parser.add_argument('--final_model', action='store_true', help='Whether to train the model using the entire training set (for final submission)')
     parser.add_argument('--save_model', action='store_true', help='Whether to save trained model')
     parser.add_argument('--train_csv_path', default='./data_train.csv', type=str,
                         help='File path for the entire training set')
     parser.add_argument('--test_csv_path', default='./sampleSubmission.csv', type=str,
-                        help='File path for the public test set (no ground truth)')
+                        help='File path for the test set (no ground truth)')
     parser.add_argument('--random_seed', default=42, type=int,
                         help='Random seed for train/test split and k-fold cross validation. Using the same random seed could reproduce our experiment results')
     parser.add_argument('--num_users', default=10000, type=int, help='Number of users in the dataset')
@@ -21,7 +24,7 @@ def parse_config(argv=None):
     parser.add_argument('--model_name', default='final_model', type=str, help='Name of the current model')
     parser.add_argument('--ckpt_path', default=None, type=str, help='Path of pre-trained model (for resume training or testing)')
     parser.add_argument('--beta_annealing_schedule', default='cyclic', choices=['linear', 'cyclic', None], type=str, 
-        help='Type of beta annealing schedule (or None to use a constant beta value, which is defined as beta_max)')
+        help='Choice of beta annealing schedule (or None to use a constant beta value, which is defined as beta_max)')
     parser.add_argument('--use_user_bias', action='store_true', help='Whether to use user bias')
     parser.add_argument('--use_movie_bias', action='store_true', help='Whether to use movie bias')
     parser.add_argument('--hidden_dimension', default=256, type=int, help='Number of neurons in the hidden layer for AE and VAE')
@@ -30,7 +33,7 @@ def parse_config(argv=None):
     parser.add_argument('--weight_init_type', default='xavier', choices=['xavier', 'kaiming', None], type=str, 
         help='Method to initialize layer weights for neural network models')
     parser.add_argument('--activation_type', default='tanh', choices=['tanh', 'sigmoid', 'leakyrelu', 'relu'], type=str, 
-        help='Type of activation for neural network models')
+        help='Choice of activation for neural network models')
     parser.add_argument('--batch_size', default=1024, type=int, help='Batch size for neural network models')
     parser.add_argument('--num_iterations', default=2000, type=int, help='Number of iterations/epochs to train the model')
     parser.add_argument('--last_iteration', default=-1, type=int, help='Last trained epoch, for resume training of a neural network model')
@@ -45,8 +48,8 @@ def parse_config(argv=None):
     parser.add_argument('--test_size', default=0.1, type=float, help='Validation set size')
     parser.add_argument('--bfm_use_iu', action='store_true', help='Whether to use implicit user features for BFM models')
     parser.add_argument('--bfm_use_ii', action='store_true', help='Whether to use implicit movie features for BFM models')
-    parser.add_argument('--bfm_auxiliary_statistical_feature', action='store_true', help='Whether to use additional user and movie statistical features as auxiliary features')
-    parser.add_argument('--bfm_auxiliary_latent_code', action='store_true', help='Whether to use additional vae encoded latent vector as auxiliary features. ' + 
+    parser.add_argument('--bfm_auxiliary_statistical_feature', action='store_true', help='Whether to use additional user and movie statistical features as auxiliary features for BFM models')
+    parser.add_argument('--bfm_auxiliary_latent_code', action='store_true', help='Whether to use additional vae encoded latent vector as auxiliary features for BFM models. ' + 
         'If true, pre-trained VAE model path must be specified via ckpt_path')
     parser.add_argument('--min_rating', default=1, type=int, help='Minimum possible rating, used for clipping predictions')
     parser.add_argument('--max_rating', default=5, type=int, help='Maximum possible rating, used for clipping predictions')
@@ -61,11 +64,26 @@ def parse_config(argv=None):
     parser.add_argument('--shrinkage', default=38, type=int, help='Shrinkage for Iterative SVD')
     parser.add_argument('--k_fold', default=10, type=int, help='The number of folds for cross validation.')
     parser.add_argument('--cv_folder', default='cv_results', type=str, help='Folder to store cross validation models and predictions')
-    
+    parser.add_argument('--model_types_blending', nargs='*', default=['ae', 'vae', 'bfm_base', 'bfm_base+implicit_blr', 'bfm_base+implicit_op', 'iterative_svd', 'rbsvd', 'ncf'], 
+        help='All model types to be blended')
+    parser.add_argument('--model_names_blending', nargs="*", default=['ae_cv', 'vae_cv', 'bfm_base_cv', 'bfm_base+implicit_blr_cv', 'implicit_op_cv', 'iterative_svd_cv', 'rbsvd_cv', 'ncf_cv'], 
+        help='Model names for each of the model type. Length must match model_types_blending.')
+    parser.add_argument('--blender_model_type', default='gbdt', choices=['lr', 'xgboost', 'gbdt'], type=str, 
+        help='Choice of model for blending')
+    parser.add_argument('--final_pred_names', nargs="*", default=['ae_final', 'vae_final', 'bfm_base_final', 'bfm_base+implicit_blr_final', 'bfm_base+implicit_op_final', 'iterative_svd_final', 'rbsvd_final', 'ncf_final'],
+        help='Names of predictions for all final models')
+    parser.add_argument('--blend_for_submission', action='store_true', help='Whether to blend all final predictions for submission. If true, final_pred_names must be specified')
+
     args = parser.parse_args(argv)
 
     if args.beta_max < 0  or args.beta_max > 1:
-        parser.error('beta_max should be in [0, 1]')
+        parser.error('beta_max should be in [0, 1]!')
+
+    values = [len(args.model_types_blending), len(args.model_names_blending)]
+    if args.blend_for_submission:
+        values.append(len(args.final_pred_names))
+    if not all(v == values[0] for v in values):
+        parser.error('Length of model_types_blending, model_names_blending, and final_pred_names (optional) must match!')
 
     args_dict = vars(args)
 
