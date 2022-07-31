@@ -126,6 +126,14 @@ To generate prediction files for single models, add flag `--save_pred_type` whic
 
 To generate prediction files for blending multiple models, add flag `--blend_for_submission`.
 
+## Generate .csv file for submission
+To generate a csv file for submission, specify `save_pred_type` and `model_name`
+For example:
+```
+python submission.py --save_pred_type 'full' --model_name 'VAE_full'
+```
+reads `VAE_full.txt` from `pred_folder` and extract user and movie indices of the test set, and generate a csv file for submission.
+
 ## Experiment results
 Below are our experiment results. You can reproduce them by using random seed 42 for cross validation.
 | Method                                       | Local CV Score | Public Test Score |
