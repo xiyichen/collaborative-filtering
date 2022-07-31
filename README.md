@@ -92,17 +92,41 @@ python cross_validation.py --model_type 'vae' --model_name 'VAE_cv' --lr_decay_r
     --R 0.5 --save_model --save_pred_type 'full'
 ```
 
-### Example: Blending BFM Base + Implicit (Ordinal Probit) and VAE
+### Blending
+To blend predictions, you will first need to do cross validation on models you would like to include. The prediction results of cross validation should be saved in `pred_folder`. When blending, the `model_names_blending` should contain the values you used as `model_name` in cross_validation.py for each model. The `final_pred_names` should contain the values you used as `model_name` when training the final model for each method.
+
+The following is an example to blend two methods: BFM Base + Implicit (Ordinal Probit) and VAE.
 ```
 python blending.py --k_fold 10 --random_seed 42 --blender_model_type 'gb' \
     --model_types_blending 'bfm_base+implicit_op' 'vae' --model_names_blending 'BFM_Ordered_Probit_SVD++' 'VAE' \
     --final_pred_names 'BFM_OrderedProbit_full' 'VAE_full' --blend_for_submission
 ```
+The directory structure should be:
+```
+collaborative-filtering
+├── $pred_folder
+|   ├── BFM_Ordered_Probit_SVD++_fold_*.txt
+|   ├── VAE_fold_*.txt
+|   ├── BFM_OrderedProbit_full.txt
+|   ├── VAE_full.txt
+```
+The following example blends all models but the two baseline methods (8 in total), which produces the lowest local CV score out of all models we tested. We refer to this model as `Blending (Gradient Boosting)` in the experiments.
+```
+python blending.py --k_fold 10 --random_seed 42 --blender_model_type 'gb' \
+    --model_types_blending 'ae' 'vae' 'bfm_base' 'bfm_base+implicit_blr' \ 
+    'bfm_base+implicit_op' 'iterative_svd' 'rbsvd' 'ncf' \
+    --model_names_blending 'AE_cv' 'VAE_cv' 'BFM_base_cv' 'BFM_SVD++_cv' 'BFM_Ordered_Probit_SVD++_cv' \ 
+    'IterSVD_cv' 'RBSVD_cv' 'NCF_cv' \ 
+    --final_pred_names 'AE_full' 'VAE_full' 'BFM_base_full' 'BFM_SVD++_full' 'BFM_OrderedProbit_full' \ 
+    'IterSVD_full' 'RBSVD_full' 'NCF_full' --blend_for_submission
+```
 
 ## Generating predictions
-To generate prediction files, add flag `--save_pred_type` which is either 'full' (for full reconstructed 10000x1000 matrix) or 'test_indices' (only saving predictions for the test user and movies). To train a final model with all available training data and generate predictions for the test set, you can use `--final_model --save_pred_type 'test_indices'`.
+To generate prediction files for single models, add flag `--save_pred_type` which is either 'full' (for full reconstructed 10000x1000 matrix) or 'test_indices' (only saving predictions for the test user and movies). To train a final model with all available training data and generate predictions for the test set, you can use `--final_model --save_pred_type 'test_indices'`.
 
-## Experiment Results
+To generate prediction files for blending multiple models, add flag `--blend_for_submission`.
+
+## Experiment results
 Below are our experiment results. You can reproduce them by using random seed 42 for cross validation.
 | Method                                       | Local CV Score | Public Test Score |
 | :------------------------------------------- |  :-----------: |  :--------------: |
