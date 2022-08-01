@@ -139,7 +139,7 @@ Below are our experiment results. You can reproduce them by using random seed 42
 | Method                                       | Local CV Score | Public Test Score |
 | :------------------------------------------- |  :-----------: |  :--------------: |
 | SVD (baseline 1)                             |     1.0081     |       1.0049      |
-| ALS (baseline 1)                             |     0.9899     |       0.9874      |
+| ALS (baseline 2)                             |     0.9899     |       0.9874      |
 | Iterative SVD                                |     0.9840     |       0.9816      |
 | Regularized + Biased SVD                     |     0.9820     |       0.9788      |
 | Bayesian FM (Gibbs)                          |     0.9779     |       0.9749      |
@@ -151,4 +151,3 @@ Below are our experiment results. You can reproduce them by using random seed 42
 | Blending (Linear Regression)                 |     0.9682     |       0.9659      |
 | Blending (XGBoost)                           |     0.9676     |     **0.9656**    |
 | Blending (Gradient Boosting)                 |   **0.9674**   |     **0.9656**    |
-
