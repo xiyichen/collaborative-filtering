@@ -1,6 +1,6 @@
 # An Ensemble Based Approach to Collaborative Filtering
 
-Semester project for Computational Intelligence Lab by Xiyi Chen, Pengxi Liu, Jiasong Guo, Chuhao Feng.
+Semester project for Computational Intelligence Lab by Xiyi Chen, Pengxi Liu, Jiasong Guo, Chuhao Feng. We ranked 3rd out of 16 teams on the private leaderboard for this [in-class Kaggle challange](https://www.kaggle.com/competitions/cil-collaborative-filtering-2022/leaderboard).
 
 ## List parameters and descriptions
 To see all available parameters and their descriptions, simply call:
@@ -36,13 +36,13 @@ python main.py --model_type 'rbsvd' --model_name 'RBSVD_test' --num_iterations 5
 
 ### Bayesian FM Base (Gibbs)
 ```
-python main.py --model_type 'bfm' --model_name 'BFM_base+implicit_op_test' \
+python main.py --model_type 'bfm' --model_name 'BFM_base' \
     --num_iterations 500 --rank_bfm 10 --bfm_regressor 'blr' --random_seed 42
 ```
 
 ### Bayesian FM Base + Implicit (Gibbs)
 ```
-python main.py --model_type 'bfm' --model_name 'BFM_base+implicit_op_test' --bfm_use_iu --bfm_use_ii \
+python main.py --model_type 'bfm' --model_name 'BFM_base+implicit_blr_test' --bfm_use_iu --bfm_use_ii \
     --num_iterations 500 --rank_bfm 10 --bfm_regressor 'blr' --random_seed 42
 ```
 
